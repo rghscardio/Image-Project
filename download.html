@@ -146,6 +146,18 @@
   </div>
 
   <script>
+ let timeoutDuration = 300000; // 5 minutes
+    let timeout;
+    let currentPage = 1;
+    const rowsPerPage = 10;
+
+    function resetTimeout() {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        alert("Session expired due to inactivity.");
+        window.location.href = "index.html";
+      }, timeoutDuration);
+    }
     var patientData = JSON.parse(localStorage.getItem('patientData')) || [];
     var rowsPerPage = 10;
     var currentPage = 1;
