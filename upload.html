@@ -40,7 +40,7 @@
     }
 
     input[type="text"], input[type="date"], select {
-      width: 100%;
+      width: 98%;
       padding: 10px;
       border: 1px solid #333;
       border-radius: 4px;
@@ -50,7 +50,7 @@
     }
 
     textarea {
-      width: 100%;
+      width: 98%;
       padding: 10px;
       border: 1px solid #333;
       border-radius: 4px;
@@ -60,7 +60,7 @@
     }
 
     input[type="file"] {
-      width: 100%;
+      width: 98%;
       padding: 10px;
       border: 1px solid #333;
       border-radius: 4px;
@@ -85,7 +85,7 @@
     .footer {
       position: absolute;
       bottom: 10px;
-      left: 10px;
+      right: 10px;
       font-size: 0.8em;
       color: #808080;
     }
@@ -154,10 +154,24 @@
       </div>
       <button type="submit">Upload</button>
     </form>
-    <div class="footer">developed by jai</div>
+    <div class="footer">Developed by Jai Kumar</div>
   </div>
 
   <script>
+
+let timeoutDuration = 300000; // 5 minutes
+    let timeout;
+    let currentPage = 1;
+    const rowsPerPage = 10;
+
+    function resetTimeout() {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        alert("Session expired due to inactivity.");
+        window.location.href = "index.html";
+      }, timeoutDuration);
+    }
+  
     document.getElementById('department').addEventListener('change', function() {
       var otherDeptGroup = document.getElementById('otherDeptGroup');
       if (this.value === 'Other') {
