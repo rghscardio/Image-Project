@@ -79,6 +79,10 @@
       background-color: #008c9e;
       border-color: #008c9e;
     }
+
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -93,7 +97,13 @@
     <form id="uploadForm">
       <input type="text" id="patientName" placeholder="Patient Name" required>
       <input type="text" id="registrationNumber" placeholder="Registration Number" required>
-      <input type="text" id="department" placeholder="Department" required>
+      <select id="department" required>
+        <option value="">Select Department</option>
+        <option value="Cardiology">Cardiology</option>
+        <option value="CTVS">CTVS</option>
+        <option value="Other">Other</option>
+      </select>
+      <input type="text" id="otherDepartment" class="hidden" placeholder="Enter Department Name">
       <input type="text" id="procedureName" placeholder="Procedure Name" required>
       <input type="date" id="procedureDate" placeholder="Procedure Date" required>
       <input type="file" id="fileInput" multiple required>
@@ -119,6 +129,19 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+      const departmentSelect = document.getElementById('department');
+      const otherDepartmentInput = document.getElementById('otherDepartment');
+
+      departmentSelect.addEventListener('change', function() {
+        if (departmentSelect.value === 'Other') {
+          otherDepartmentInput.classList.remove('hidden');
+          otherDepartmentInput.required = true;
+        } else {
+          otherDepartmentInput.classList.add('hidden');
+          otherDepartmentInput.required = false;
+        }
+      });
+
       document.getElementById('uploadForm').addEventListener('submit', function(event) {
         event.preventDefault();
 
@@ -126,7 +149,7 @@
 
         let patientName = document.getElementById('patientName').value;
         let registrationNumber = document.getElementById('registrationNumber').value;
-        let department = document.getElementById('department').value;
+        let department = departmentSelect.value === 'Other' ? otherDepartmentInput.value : departmentSelect.value;
         let procedureName = document.getElementById('procedureName').value;
         let procedureDate = document.getElementById('procedureDate').value;
         let files = document.getElementById('fileInput').files;
@@ -150,6 +173,8 @@
               localStorage.setItem('patientData', JSON.stringify(patientData));
               alert('Patient information uploaded successfully!');
               document.getElementById('uploadForm').reset();
+              otherDepartmentInput.classList.add('hidden');
+              otherDepartmentInput.required = false;
             }
           };
           reader.readAsDataURL(files[i]);
