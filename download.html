@@ -116,6 +116,7 @@
     <div class="nav-buttons">
       <a href="upload.html">Upload Page</a>
       <a href="download.html">Download Page</a>
+      <button onclick="logout()">Logout</button>
     </div>
     <h1>Download Patient Information</h1>
     <div>
@@ -146,7 +147,7 @@
   </div>
 
   <script>
- let timeoutDuration = 300000; // 5 minutes
+    let timeoutDuration = 300000; // 5 minutes
     let timeout;
     let currentPage = 1;
     const rowsPerPage = 10;
@@ -158,6 +159,11 @@
         window.location.href = "index.html";
       }, timeoutDuration);
     }
+
+    function logout() {
+      window.location.href = "index.html";
+    }
+
     var patientData = JSON.parse(localStorage.getItem('patientData')) || [];
     var rowsPerPage = 10;
     var currentPage = 1;
@@ -314,12 +320,61 @@
         );
       });
 
-      displayTable(filteredData);
+      var tableBody = document.getElementById('patientTableBody');
+      tableBody.innerHTML = '';
+
+      filteredData.forEach(function(patient, index) {
+        var row = document.createElement('tr');
+
+        var selectCell = document.createElement('td');
+        var selectInput = document.createElement('input');
+        selectInput.type = 'checkbox';
+        selectInput.value = index;
+        selectCell.appendChild(selectInput);
+        row.appendChild(selectCell);
+
+        var nameCell = document.createElement('td');
+        nameCell.innerText = patient.patientName;
+        row.appendChild(nameCell);
+
+        var regNumCell = document.createElement('td');
+        regNumCell.innerText = patient.registrationNumber;
+        row.appendChild(regNumCell);
+
+        var deptCell = document.createElement('td');
+        deptCell.innerText = patient.department;
+        row.appendChild(deptCell);
+
+        var procNameCell = document.createElement('td');
+        procNameCell.innerText = patient.procedureName;
+        row.appendChild(procNameCell);
+
+        var procDateCell = document.createElement('td');
+        procDateCell.innerText = patient.procedureDate;
+        row.appendChild(procDateCell);
+
+        var actionsCell = document.createElement('td');
+        var downloadBtn = document.createElement('button');
+        downloadBtn.innerText = 'Download';
+        downloadBtn.onclick = function() { downloadFiles(index); };
+        actionsCell.appendChild(downloadBtn);
+
+        var deleteBtn = document.createElement('button');
+        deleteBtn.innerText = 'Delete';
+        deleteBtn.onclick = function() { deleteEntry(index); };
+        actionsCell.appendChild(deleteBtn);
+
+        row.appendChild(actionsCell);
+        tableBody.appendChild(row);
+      });
     }
 
     document.addEventListener('DOMContentLoaded', function() {
       displayTable(currentPage);
       setupPagination();
+      document.body.addEventListener('mousemove', resetTimeout);
+      document.body.addEventListener('keypress', resetTimeout);
+      resetTimeout();
     });
   </script>
 </body>
