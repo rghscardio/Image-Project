@@ -165,8 +165,6 @@
     }
 
     var patientData = JSON.parse(localStorage.getItem('patientData')) || [];
-    var rowsPerPage = 10;
-    var currentPage = 1;
 
     function displayTable(page) {
       var start = (page - 1) * rowsPerPage;
