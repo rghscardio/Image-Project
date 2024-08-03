@@ -29,44 +29,14 @@
       color: #00bcd4;
     }
 
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-
-    input[type="text"], input[type="date"], select {
-      width: 98%;
+    input, select {
+      width: 100%;
       padding: 10px;
-      border: 1px solid #333;
-      border-radius: 4px;
-      background-color: #222;
+      margin: 10px 0;
+      background-color: #333;
       color: #ffffff;
-      margin-bottom: 10px;
-    }
-
-    textarea {
-      width: 98%;
-      padding: 10px;
-      border: 1px solid #333;
+      border: 1px solid #00bcd4;
       border-radius: 4px;
-      background-color: #222;
-      color: #ffffff;
-      margin-bottom: 10px;
-    }
-
-    input[type="file"] {
-      width: 98%;
-      padding: 10px;
-      border: 1px solid #333;
-      border-radius: 4px;
-      background-color: #222;
-      color: #ffffff;
-      margin-bottom: 10px;
     }
 
     button {
@@ -109,69 +79,27 @@
       background-color: #008c9e;
       border-color: #008c9e;
     }
-
-    .logout-button {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: #00bcd4;
-      padding: 10px 20px;
-      color: #ffffff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .logout-button:hover {
-      background-color: #008c9e;
-    }
   </style>
 </head>
-<body onload="resetTimeout()">
+<body>
   <div class="container">
-    <h1>RNT Medical College, Udaipur</h1>
-    <button class="logout-button" onclick="logout()">Logout</button>
+    <h2>RNT Medical College, Udaipur</h2>
     <div class="nav-buttons">
       <a href="upload.html">Upload Page</a>
       <a href="download.html">Download Page</a>
+      <button onclick="logout()">Logout</button>
     </div>
-    <h2>Upload Patient Image</h2>
-    <form id="uploadForm" onsubmit="handleFormSubmit(event)">
-      <div class="form-group">
-        <label for="patientName">Patient Name:</label>
-        <input type="text" id="patientName" required>
-      </div>
-      <div class="form-group">
-        <label for="registrationNumber">Registration Number:</label>
-        <input type="text" id="registrationNumber" required>
-      </div>
-      <div class="form-group">
-        <label for="department">Department:</label>
-        <select id="department" required>
-          <option value="Cardiology">Cardiology</option>
-          <option value="CTVS">CTVS</option>
-          <option value="Other">Other</option>
-        </select>
-      </div>
-      <div class="form-group" id="otherDeptGroup" style="display: none;">
-        <label for="otherDepartment">Other Department:</label>
-        <input type="text" id="otherDepartment">
-      </div>
-      <div class="form-group">
-        <label for="procedureName">Procedure Name:</label>
-        <input type="text" id="procedureName" required>
-      </div>
-      <div class="form-group">
-        <label for="procedureDate">Procedure Date:</label>
-        <input type="date" id="procedureDate" required>
-      </div>
-      <div class="form-group">
-        <label for="imageFiles">Upload Images:</label>
-        <input type="file" id="imageFiles" multiple accept="image/*" required>
-      </div>
+    <h1>Upload Patient Information</h1>
+    <form id="uploadForm">
+      <input type="text" id="patientName" placeholder="Patient Name" required>
+      <input type="text" id="registrationNumber" placeholder="Registration Number" required>
+      <input type="text" id="department" placeholder="Department" required>
+      <input type="text" id="procedureName" placeholder="Procedure Name" required>
+      <input type="date" id="procedureDate" placeholder="Procedure Date" required>
+      <input type="file" id="fileInput" multiple required>
       <button type="submit">Upload</button>
     </form>
-    <div class="footer">Developed by Jai Kumar</div>
+    <div class="footer">developed by Jai Kumar</div>
   </div>
 
   <script>
@@ -187,70 +115,51 @@
     }
 
     function logout() {
-      alert("You have been logged out.");
       window.location.href = "index.html";
     }
 
-    document.body.addEventListener('mousemove', resetTimeout);
-    document.body.addEventListener('keypress', resetTimeout);
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('uploadForm').addEventListener('submit', function(event) {
+        event.preventDefault();
 
-    document.getElementById('department').addEventListener('change', function() {
-      var otherDeptGroup = document.getElementById('otherDeptGroup');
-      if (this.value === 'Other') {
-        otherDeptGroup.style.display = 'block';
-      } else {
-        otherDeptGroup.style.display = 'none';
-        document.getElementById('otherDepartment').value = ''; // Clear value
-      }
-    });
+        let patientData = JSON.parse(localStorage.getItem('patientData')) || [];
 
-    function handleFormSubmit(event) {
-      event.preventDefault();
+        let patientName = document.getElementById('patientName').value;
+        let registrationNumber = document.getElementById('registrationNumber').value;
+        let department = document.getElementById('department').value;
+        let procedureName = document.getElementById('procedureName').value;
+        let procedureDate = document.getElementById('procedureDate').value;
+        let files = document.getElementById('fileInput').files;
 
-      var patientName = document.getElementById('patientName').value;
-      var registrationNumber = document.getElementById('registrationNumber').value;
-      var department = document.getElementById('department').value;
-      var otherDepartment = document.getElementById('otherDepartment').value;
-      var procedureName = document.getElementById('procedureName').value;
-      var procedureDate = document.getElementById('procedureDate').value;
-      var imageFiles = document.getElementById('imageFiles').files;
+        let images = [];
 
-      if (department === 'Other' && !otherDepartment) {
-        alert('Please enter the other department.');
-        return;
-      }
+        for (let i = 0; i < files.length; i++) {
+          let reader = new FileReader();
+          reader.onload = function(e) {
+            images.push({ name: files[i].name, content: e.target.result });
+            if (images.length === files.length) {
+              patientData.push({
+                patientName,
+                registrationNumber,
+                department,
+                procedureName,
+                procedureDate,
+                images
+              });
 
-      var departmentValue = department === 'Other' ? otherDepartment : department;
-
-      var patientData = JSON.parse(localStorage.getItem('patientData')) || [];
-      var patient = {
-        patientName: patientName,
-        registrationNumber: registrationNumber,
-        department: departmentValue,
-        procedureName: procedureName,
-        procedureDate: procedureDate,
-        images: []
-      };
-
-      Array.from(imageFiles).forEach(function(file) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-          var imageContent = e.target.result;
-          var image = {
-            name: file.name,
-            content: imageContent
+              localStorage.setItem('patientData', JSON.stringify(patientData));
+              alert('Patient information uploaded successfully!');
+              document.getElementById('uploadForm').reset();
+            }
           };
-          patient.images.push(image);
-          if (patient.images.length === imageFiles.length) {
-            patientData.push(patient);
-            localStorage.setItem('patientData', JSON.stringify(patientData));
-            alert("Files uploaded successfully.");
-            document.getElementById('uploadForm').reset();
-          }
-        };
-        reader.readAsDataURL(file);
+          reader.readAsDataURL(files[i]);
+        }
       });
-    }
+
+      document.body.addEventListener('mousemove', resetTimeout);
+      document.body.addEventListener('keypress', resetTimeout);
+      resetTimeout();
+    });
   </script>
 </body>
 </html>
