@@ -109,11 +109,28 @@
       background-color: #008c9e;
       border-color: #008c9e;
     }
+
+    .logout-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #00bcd4;
+      padding: 10px 20px;
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .logout-button:hover {
+      background-color: #008c9e;
+    }
   </style>
 </head>
-<body>
+<body onload="resetTimeout()">
   <div class="container">
     <h1>RNT Medical College, Udaipur</h1>
+    <button class="logout-button" onclick="logout()">Logout</button>
     <div class="nav-buttons">
       <a href="upload.html">Upload Page</a>
       <a href="download.html">Download Page</a>
@@ -158,11 +175,8 @@
   </div>
 
   <script>
-
-let timeoutDuration = 300000; // 5 minutes
+    let timeoutDuration = 300000; // 5 minutes
     let timeout;
-    let currentPage = 1;
-    const rowsPerPage = 10;
 
     function resetTimeout() {
       clearTimeout(timeout);
@@ -171,7 +185,15 @@ let timeoutDuration = 300000; // 5 minutes
         window.location.href = "index.html";
       }, timeoutDuration);
     }
-  
+
+    function logout() {
+      alert("You have been logged out.");
+      window.location.href = "index.html";
+    }
+
+    document.body.addEventListener('mousemove', resetTimeout);
+    document.body.addEventListener('keypress', resetTimeout);
+
     document.getElementById('department').addEventListener('change', function() {
       var otherDeptGroup = document.getElementById('otherDeptGroup');
       if (this.value === 'Other') {
